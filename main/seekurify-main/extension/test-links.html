@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Link Scanner — Test Page</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #e2e8f0; padding: 32px; max-width: 600px; margin: auto; }
+    h1   { color: #06b6d4; margin-bottom: 4px; }
+    p    { color: #64748b; margin-bottom: 24px; font-size: 13px; }
+    h3   { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin: 24px 0 8px; }
+    a    { display: block; background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+           padding: 10px 14px; margin: 6px 0; color: #7dd3fc; text-decoration: none; font-size: 13px; }
+    a:hover { border-color: #475569; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px;
+           border-radius: 4px; margin-right: 8px; vertical-align: middle; }
+    .red    { background: #f8717122; color: #f87171; border: 1px solid #f87171; }
+    .orange { background: #f9731622; color: #f97316; border: 1px solid #f97316; }
+    .green  { background: #4ade8022; color: #4ade80; border: 1px solid #4ade80; }
+  </style>
+</head>
+<body>
+
+<h1>Link Scanner Test Page</h1>
+<p>Hover over each link for 0.5 s — the Seekurify tooltip should appear with the verdict shown.</p>
+
+<!-- MALICIOUS -->
+<h3>🔴 Expected: MALICIOUS</h3>
+
+<a href="https://paypal.evil-domain.tk/verify-account">
+  <span class="tag red">Brand spoof + bad TLD</span>
+  paypal.evil-domain.tk/verify-account
+</a>
+
+<a href="https://secure-apple-id.login-now.xyz/confirm">
+  <span class="tag red">Brand spoof (apple)</span>
+  secure-apple-id.login-now.xyz/confirm
+</a>
+
+<a href="http://user:pass@suspicious-bank.com/login">
+  <span class="tag red">Credential in URL (@)</span>
+  http://user:pass@suspicious-bank.com/login
+</a>
+
+<a href="data:text/html,<script>alert(1)</script>">
+  <span class="tag red">Data URI</span>
+  data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;
+</a>
+
+<!-- SUSPICIOUS -->
+<h3>🟠 Expected: SUSPICIOUS</h3>
+
+<a href="http://192.168.1.1/admin/signin">
+  <span class="tag orange">IP address host</span>
+  192.168.1.1/admin/signin
+</a>
+
+<a href="https://bit.ly/3xAmPl3">
+  <span class="tag orange">URL shortener</span>
+  bit.ly/3xAmPl3
+</a>
+
+<a href="https://tinyurl.com/fake-redirect">
+  <span class="tag orange">URL shortener</span>
+  tinyurl.com/fake-redirect
+</a>
+
+<a href="https://sub.sub.sub.sub.dodgy-host.com/verify">
+  <span class="tag orange">Excessive subdomains</span>
+  sub.sub.sub.sub.dodgy-host.com/verify
+</a>
+
+<a href="https://totally-normal.tk/page">
+  <span class="tag orange">High-risk TLD (.tk)</span>
+  totally-normal.tk/page
+</a>
+
+<a href="https://example.xyz/confirm-password?token=abc123">
+  <span class="tag orange">Credential keyword in path</span>
+  example.xyz/confirm-password?token=abc123
+</a>
+
+<a href="https://example.com/page?redirect=https://example.com/verify-account">
+  <span class="tag orange">Nested redirect in URL</span>
+  example.com?redirect=https://example.com/verify
+</a>
+
+<!-- SAFE -->
+<h3>🟢 Expected: SAFE</h3>
+
+<a href="https://www.wikipedia.org/wiki/Cybersecurity">
+  <span class="tag green">Safe</span>
+  wikipedia.org/wiki/Cybersecurity
+</a>
+
+<a href="https://github.com/anthropics/anthropic-sdk-python">
+  <span class="tag green">Safe</span>
+  github.com/anthropics/...
+</a>
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/API">
+  <span class="tag green">Safe</span>
+  developer.mozilla.org
+</a>
+
+</body>
+</html>

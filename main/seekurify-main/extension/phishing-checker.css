@@ -1,0 +1,323 @@
+/* ── Seekurify Phishing Warning Banner ──────────────────────────────────────── */
+
+.sk-phi-bar {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  margin: 0 0 10px !important;
+  position: relative !important;
+  z-index: 999999 !important;
+  animation: sk-phi-fade 0.25s ease !important;
+}
+
+@keyframes sk-phi-fade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sk-phi-bar-inner {
+  all: initial !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  background: #1a0d00 !important;
+  border: 1.5px solid #f97316 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.5) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #f1f5f9 !important;
+}
+
+.sk-phi-icon {
+  all: initial !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  border-radius: 6px !important;
+  margin-top: 1px !important;
+}
+
+.sk-phi-bar-body {
+  all: initial !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #f1f5f9 !important;
+}
+
+.sk-phi-bar-title-row {
+  all: initial !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.sk-phi-bar-title {
+  all: initial !important;
+  display: inline !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  color: #f97316 !important;
+}
+
+.sk-phi-score-badge {
+  all: initial !important;
+  display: inline-block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  padding: 1px 7px !important;
+  border-radius: 4px !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  background: transparent !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.sk-phi-pills {
+  all: initial !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+
+.sk-phi-pill {
+  display: inline-block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 2px 7px !important;
+  border-radius: 4px !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  background: transparent !important;
+  line-height: 1.4 !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+.sk-phi-source {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 9px !important;
+  color: #94a3b8 !important;
+  font-style: italic !important;
+}
+
+.sk-phi-score-note {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 9px !important;
+  color: #64748b !important;
+  font-style: italic !important;
+  margin-top: 3px !important;
+  line-height: 1.4 !important;
+}
+
+.sk-phi-dismiss {
+  all: initial !important;
+  cursor: pointer !important;
+  color: #64748b !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  flex-shrink: 0 !important;
+  align-self: flex-start !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.sk-phi-dismiss:hover {
+  color: #f1f5f9 !important;
+  background: #334155 !important;
+}
+
+/* ── Seekurify Spear Phishing Warning Banner ─────────────────────────────────── */
+
+.sk-spear-bar {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  margin: 0 0 8px !important;
+  position: relative !important;
+  z-index: 999999 !important;
+  animation: sk-phi-fade 0.25s ease !important;
+}
+
+.sk-spear-bar-inner {
+  all: initial !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  background: #1a0008 !important;
+  border: 1.5px solid #fb7185 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.5) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #f1f5f9 !important;
+}
+
+.sk-spear-icon {
+  all: initial !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  background: #fb718522 !important;
+  border: 1.5px solid #fb7185 !important;
+  margin-top: 1px !important;
+}
+
+.sk-spear-body {
+  all: initial !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.sk-spear-title-row {
+  all: initial !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+}
+
+.sk-spear-title {
+  all: initial !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #fb7185 !important;
+  line-height: 1.3 !important;
+}
+
+.sk-spear-badge {
+  all: initial !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.5 !important;
+}
+
+.sk-spear-target {
+  background: #fb718522 !important;
+  border: 1px solid #fb7185 !important;
+  color: #fb7185 !important;
+}
+
+.sk-spear-signals {
+  all: initial !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+  margin-top: 2px !important;
+}
+
+.sk-spear-sig {
+  all: initial !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #cbd5e1 !important;
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  line-height: 1.5 !important;
+}
+
+.sk-spear-sig-warn {
+  color: #fbbf24 !important;
+  border-color: #78350f !important;
+  background: #78350f22 !important;
+}
+
+.sk-spear-absences {
+  all: initial !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  margin-top: 2px !important;
+}
+
+.sk-spear-absence {
+  all: initial !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 10px !important;
+  color: #94a3b8 !important;
+  line-height: 1.4 !important;
+}
+
+.sk-spear-lookalikes {
+  all: initial !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  margin-top: 2px !important;
+}
+
+.sk-spear-domain {
+  all: initial !important;
+  font-family: 'SF Mono', 'Fira Code', monospace !important;
+  font-size: 10px !important;
+  color: #fca5a5 !important;
+  background: #7f1d1d33 !important;
+  border: 1px solid #7f1d1d !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  line-height: 1.5 !important;
+}
+
+.sk-spear-source {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 9px !important;
+  color: #64748b !important;
+  font-style: italic !important;
+  margin-top: 2px !important;
+}
+
+.sk-spear-dismiss {
+  all: initial !important;
+  cursor: pointer !important;
+  color: #64748b !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  flex-shrink: 0 !important;
+  align-self: flex-start !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.sk-spear-dismiss:hover {
+  color: #f1f5f9 !important;
+  background: #334155 !important;
+}

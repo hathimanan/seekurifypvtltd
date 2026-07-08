@@ -1,0 +1,19 @@
+{
+  "cookies": [
+    {
+      "domain": "localhost",
+      "expiry": 1778479220,
+      "httpOnly": false,
+      "name": "rzp_unified_session_id",
+      "path": "/",
+      "sameSite": "Lax",
+      "secure": false,
+      "value": "SnwTYRPpw0grTj"
+    }
+  ],
+  "localStorage": {
+    "rzp_checkout_anon_id": "5755ed1b055e47488622f93aaaa67881",
+    "rzp_device_id": "1.d82720b335ebcea871b856dce4e2240a253fe857.1778477420885.20334393",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTY4YTc5OWMyNzY1Y2Q4YWI3ZTZkZjQiLCJlbWFpbCI6InN0cmFuZ2VyMjI3NzU1M0BnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzg0Nzc0MjQsImV4cCI6MTc3ODQ3ODMyNH0.25M3DGEP4Rgyn8Xr9aY_XCwDX7sp8tQFg6sLHRnXSEI"
+  }
+}

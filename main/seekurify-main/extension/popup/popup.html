@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seekurify</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo">S</div>
+      <span class="brand-name">Seekurify</span>
+    </div>
+    <div class="header-actions" id="header-actions" style="display:none">
+      <button id="btn-settings" class="icon-btn" title="Settings">⚙</button>
+      <button id="btn-lock"     class="icon-btn" title="Lock vault">🔒</button>
+    </div>
+  </header>
+
+  <!-- Tab bar (visible when logged in) -->
+  <nav id="tab-bar" class="tab-bar" style="display:none">
+    <button id="tab-vault" class="tab-btn tab-active" data-tab="vault">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Vault
+    </button>
+    <button id="tab-audit" class="tab-btn" data-tab="audit">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Audit
+    </button>
+    <button id="tab-pii" class="tab-btn" data-tab="pii">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Privacy
+    </button>
+    <button id="tab-injection" class="tab-btn" data-tab="injection">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Inject
+    </button>
+    <button id="tab-phishing" class="tab-btn" data-tab="phishing">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Phishing
+    </button>
+    <button id="tab-breach" class="tab-btn" data-tab="breach">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Breach
+    </button>
+  </nav>
+
+  <!-- Login view — Step 1: email + password -->
+  <div id="view-login" class="view">
+    <p class="hint">Sign in with your Seekurify account</p>
+    <form id="form-login" autocomplete="off">
+      <input id="input-email"    type="email"    placeholder="Email"    required class="field" />
+      <input id="input-password" type="password" placeholder="Password" required class="field" />
+      <div id="login-error" class="error-msg" style="display:none"></div>
+      <button type="submit" id="btn-login" class="btn-primary">Sign in</button>
+    </form>
+    <p class="signup-row">
+      Don't have an account?
+      <button id="btn-signup" class="link-btn">Create one</button>
+    </p>
+  </div>
+
+  <!-- OTP view — Step 2/3: enter emailed OTP -->
+  <div id="view-otp" class="view" style="display:none">
+    <p class="hint" id="otp-hint">Enter the 6-digit code sent to your email.</p>
+    <form id="form-otp" autocomplete="off">
+      <input id="input-otp" type="text" placeholder="6-digit code" maxlength="6"
+             inputmode="numeric" pattern="[0-9]{6}" required class="field" />
+      <div id="otp-error" class="error-msg" style="display:none"></div>
+      <button type="submit" id="btn-otp" class="btn-primary">Verify code</button>
+    </form>
+    <button id="btn-resend-otp" class="back-btn" style="margin-top:8px">Resend code</button>
+    <button id="btn-otp-back" class="back-btn" style="margin-top:4px">← Back</button>
+  </div>
+
+  <!-- PIN view — Step 4: enter account PIN → receives JWT -->
+  <div id="view-pin" class="view" style="display:none">
+    <p class="hint">Enter your 4-digit Seekurify PIN to complete sign-in.</p>
+    <form id="form-pin" autocomplete="off">
+      <input id="input-pin" type="password" placeholder="4-digit PIN" maxlength="4"
+             inputmode="numeric" pattern="[0-9]{4}" required class="field" />
+      <div id="pin-error" class="error-msg" style="display:none"></div>
+      <button type="submit" id="btn-pin" class="btn-primary">Unlock vault</button>
+    </form>
+    <button id="btn-pin-back" class="back-btn" style="margin-top:8px">← Back</button>
+  </div>
+
+  <!-- Settings view -->
+  <div id="view-settings" class="view" style="display:none">
+    <button id="btn-back" class="back-btn">← Back</button>
+    <h3 class="section-title">Extension Settings</h3>
+    <label class="field-label">Seekurify server URL</label>
+    <input id="input-api-base" type="url" class="field" placeholder="http://localhost:5000" />
+    <p class="hint" style="margin-top:4px">Change this to your production URL when deploying.</p>
+    <button id="btn-save-settings" class="btn-primary" style="margin-top:12px">Save</button>
+    <div id="settings-msg" style="display:none;margin-top:8px;font-size:12px;color:#06b6d4"></div>
+    <hr class="divider" />
+    <div class="pii-toggle-row" style="margin-top:4px">
+      <div class="pii-toggle-label">
+        <div class="pii-toggle-title">Link Scanner</div>
+        <div class="pii-toggle-sub">Scan links on hover for phishing &amp; malware</div>
+      </div>
+      <button id="link-scan-toggle-btn" class="pii-toggle" aria-pressed="true">
+        <span class="pii-toggle-knob"></span>
+      </button>
+    </div>
+    <hr class="divider" />
+    <div class="pii-toggle-row" style="margin-top:4px">
+      <div class="pii-toggle-label">
+        <div class="pii-toggle-title">Breach Check</div>
+        <div class="pii-toggle-sub">Warn when a password is found in known breaches</div>
+      </div>
+      <button id="breach-check-toggle-btn" class="pii-toggle" aria-pressed="true">
+        <span class="pii-toggle-knob"></span>
+      </button>
+    </div>
+    <hr class="divider" />
+    <button id="btn-logout" class="btn-danger">Sign out</button>
+  </div>
+
+  <!-- Vault view -->
+  <div id="view-vault" class="view" style="display:none">
+    <div id="site-section" style="display:none">
+      <div class="section-label" id="site-label"></div>
+      <div id="site-entries"></div>
+    </div>
+    <div class="search-wrap">
+      <input id="input-search" type="text" placeholder="Search passwords…" class="field field-search" />
+    </div>
+    <div class="section-label">All passwords</div>
+    <div id="all-entries"></div>
+    <div id="empty-msg" class="empty" style="display:none">No passwords saved yet.</div>
+  </div>
+
+  <!-- Site Audit view -->
+  <div id="view-audit" class="view" style="display:none">
+
+    <!-- Current site pill -->
+    <div class="audit-site-row">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span id="audit-site-display" class="audit-site-text">—</span>
+    </div>
+
+    <button id="btn-run-audit" class="btn-primary audit-run-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Audit This Site
+    </button>
+
+    <!-- Loading -->
+    <div id="audit-loading" class="audit-loading" style="display:none">
+      <div class="audit-spinner"></div>
+      <span>Scanning site…</span>
+    </div>
+
+    <!-- Error -->
+    <div id="audit-error" class="error-msg" style="display:none;margin-top:10px"></div>
+
+    <!-- Results -->
+    <div id="audit-results" style="display:none">
+
+      <!-- Grade + Score -->
+      <div class="audit-grade-card">
+        <div id="audit-grade-badge" class="audit-grade">—</div>
+        <div class="audit-score-col">
+          <div class="audit-score-nums">
+            <span id="audit-score-val" class="audit-score-val">—</span>
+            <span class="audit-score-max">/100</span>
+          </div>
+          <div class="audit-bar-track">
+            <div id="audit-score-bar" class="audit-bar-fill" style="width:0%"></div>
+          </div>
+          <div id="audit-scanned-url" class="audit-scanned-url"></div>
+        </div>
+      </div>
+
+      <!-- Quick checks row -->
+      <div class="audit-checks">
+        <div id="chk-ssl"       class="audit-check"><span class="chk-icon">—</span><span class="chk-label">SSL</span><span class="chk-explain"></span></div>
+        <div id="chk-headers"   class="audit-check"><span class="chk-icon">—</span><span class="chk-label">Headers</span><span class="chk-explain"></span></div>
+        <div id="chk-blacklist" class="audit-check"><span class="chk-icon">—</span><span class="chk-label">Blacklist</span><span class="chk-explain"></span></div>
+        <div id="chk-dns"       class="audit-check"><span class="chk-icon">—</span><span class="chk-label">DNS</span><span class="chk-explain"></span></div>
+      </div>
+      <!-- Grade criteria note -->
+      <div id="audit-score-formula" class="audit-formula-note" style="display:none"></div>
+
+      <!-- Findings -->
+      <div id="audit-findings-wrap">
+        <div class="section-label" style="margin-top:10px">Findings</div>
+        <div id="audit-findings-list"></div>
+        <div id="audit-no-findings" class="empty" style="display:none">No issues found — site looks clean.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Privacy / PII monitor view -->
+  <div id="view-pii" class="view" style="display:none">
+
+    <!-- Monitoring toggle -->
+    <div class="pii-toggle-row">
+      <div class="pii-toggle-label">
+        <div class="pii-toggle-title">AI Prompt Monitoring</div>
+        <div class="pii-toggle-sub">Scans ChatGPT, Claude, Gemini &amp; more</div>
+      </div>
+      <button id="pii-toggle-btn" class="pii-toggle" aria-pressed="true">
+        <span class="pii-toggle-knob"></span>
+      </button>
+    </div>
+
+    <!-- Session stats -->
+    <div id="pii-stats-row" class="pii-stats-row">
+      <div class="pii-stat">
+        <div id="pii-stat-total" class="pii-stat-val">0</div>
+        <div class="pii-stat-label">Detections</div>
+      </div>
+      <div class="pii-stat">
+        <div id="pii-stat-submitted" class="pii-stat-val">0</div>
+        <div class="pii-stat-label">Submitted</div>
+      </div>
+      <div class="pii-stat">
+        <div id="pii-stat-critical" class="pii-stat-val pii-critical-val">0</div>
+        <div class="pii-stat-label">Critical</div>
+      </div>
+    </div>
+
+    <!-- Log header -->
+    <div class="pii-log-header">
+      <span class="section-label" style="padding:0">This session</span>
+      <button id="btn-clear-pii" class="link-btn" style="font-size:11px">Clear</button>
+    </div>
+
+    <!-- Detection list -->
+    <div id="pii-log-list"></div>
+    <div id="pii-log-empty" class="empty" style="display:none">
+      No PII detected yet.<br>Visit ChatGPT, Claude, or Gemini to start monitoring.
+    </div>
+
+    <!-- Disabled overlay -->
+    <div id="pii-disabled-msg" class="empty" style="display:none">
+      Monitoring is paused.<br>Toggle on to resume.
+    </div>
+
+  </div>
+
+  <!-- Injection monitor view -->
+  <div id="view-injection" class="view" style="display:none">
+
+    <!-- Monitoring toggle -->
+    <div class="pii-toggle-row">
+      <div class="pii-toggle-label">
+        <div class="pii-toggle-title">Injection Monitoring</div>
+        <div class="pii-toggle-sub">Detects SQL, prompt injection &amp; more</div>
+      </div>
+      <button id="inj-toggle-btn" class="pii-toggle" aria-pressed="true">
+        <span class="pii-toggle-knob"></span>
+      </button>
+    </div>
+
+    <!-- Session stats -->
+    <div id="inj-stats-row" class="pii-stats-row">
+      <div class="pii-stat">
+        <div id="inj-stat-total" class="pii-stat-val">0</div>
+        <div class="pii-stat-label">Detections</div>
+      </div>
+      <div class="pii-stat">
+        <div id="inj-stat-submitted" class="pii-stat-val">0</div>
+        <div class="pii-stat-label">Submitted</div>
+      </div>
+      <div class="pii-stat">
+        <div id="inj-stat-critical" class="pii-stat-val pii-critical-val">0</div>
+        <div class="pii-stat-label">Critical</div>
+      </div>
+    </div>
+
+    <!-- Log header -->
+    <div class="pii-log-header">
+      <span class="section-label" style="padding:0">This session</span>
+      <button id="btn-clear-inj" class="link-btn" style="font-size:11px">Clear</button>
+    </div>
+
+    <!-- Detection list -->
+    <div id="inj-log-list"></div>
+    <div id="inj-log-empty" class="empty" style="display:none">
+      No injections detected yet.<br>Visit ChatGPT, Claude, or Gemini to start monitoring.
+    </div>
+
+    <!-- Disabled overlay -->
+    <div id="inj-disabled-msg" class="empty" style="display:none">
+      Monitoring is paused.<br>Toggle on to resume.
+    </div>
+
+  </div>
+
+  <!-- Phishing monitor view -->
+  <div id="view-phishing" class="view" style="display:none">
+
+    <!-- Monitoring toggle -->
+    <div class="pii-toggle-row">
+      <div class="pii-toggle-label">
+        <div class="pii-toggle-title">Phishing Detection</div>
+        <div class="pii-toggle-sub">Scans Gmail, Outlook, Yahoo &amp; more</div>
+      </div>
+      <button id="phi-toggle-btn" class="pii-toggle" aria-pressed="true">
+        <span class="pii-toggle-knob"></span>
+      </button>
+    </div>
+
+    <!-- Session stats -->
+    <div id="phi-stats-row" class="pii-stats-row">
+      <div class="pii-stat">
+        <div id="phi-stat-total" class="pii-stat-val">0</div>
+        <div class="pii-stat-label">Detections</div>
+      </div>
+      <div class="pii-stat">
+        <div id="phi-stat-critical" class="pii-stat-val pii-critical-val">0</div>
+        <div class="pii-stat-label">Critical</div>
+      </div>
+      <div class="pii-stat">
+        <div id="phi-stat-avg-score" class="pii-stat-val">—</div>
+        <div class="pii-stat-label">Avg Score</div>
+      </div>
+    </div>
+
+    <!-- Log header -->
+    <div class="pii-log-header">
+      <span class="section-label" style="padding:0">This session</span>
+      <button id="btn-clear-phi" class="link-btn" style="font-size:11px">Clear</button>
+    </div>
+
+    <!-- Detection list -->
+    <div id="phi-log-list"></div>
+    <div id="phi-log-empty" class="empty" style="display:none">
+      No phishing detected yet.<br>Visit Gmail, Outlook, or Yahoo Mail to start monitoring.
+    </div>
+
+    <!-- Disabled overlay -->
+    <div id="phi-disabled-msg" class="empty" style="display:none">
+      Monitoring is paused.<br>Toggle on to resume.
+    </div>
+
+  </div>
+
+  <!-- Breach Detector view -->
+  <div id="view-breach" class="view" style="display:none">
+
+    <!-- Scan button -->
+    <button id="btn-run-breach" class="btn-primary breach-scan-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Check for Breaches
+    </button>
+
+    <!-- Loading -->
+    <div id="breach-loading" class="audit-loading" style="display:none">
+      <div class="audit-spinner"></div>
+      <span>Checking HaveIBeenPwned…</span>
+    </div>
+
+    <!-- Error -->
+    <div id="breach-error" class="error-msg" style="display:none;margin-top:10px"></div>
+
+    <!-- Results -->
+    <div id="breach-results" style="display:none">
+
+      <!-- Stats -->
+      <div class="pii-stats-row" style="margin-top:10px">
+        <div class="pii-stat">
+          <div id="breach-stat-pwned" class="pii-stat-val pii-critical-val">—</div>
+          <div class="pii-stat-label">Pwned</div>
+        </div>
+        <div class="pii-stat">
+          <div id="breach-stat-clean" class="pii-stat-val" style="color:#4ade80">—</div>
+          <div class="pii-stat-label">Clean</div>
+        </div>
+        <div class="pii-stat">
+          <div id="breach-stat-new" class="pii-stat-val" style="color:#f97316">—</div>
+          <div class="pii-stat-label">Newly Found</div>
+        </div>
+      </div>
+
+      <!-- Password breach list -->
+      <div class="section-label" style="margin-top:10px">Compromised Passwords</div>
+      <div id="breach-pw-list"></div>
+
+      <!-- Email breach section -->
+      <div class="section-label" style="margin-top:12px">
+        <span>Email Breaches</span>
+        <button id="btn-check-email" class="link-btn" style="font-size:10px;margin-left:6px;text-transform:none;letter-spacing:0;font-weight:600">Check</button>
+      </div>
+      <div id="breach-email-loading" class="audit-loading" style="display:none;padding:8px 0">
+        <div class="audit-spinner"></div><span>Checking email…</span>
+      </div>
+      <div id="breach-email-error"  class="error-msg" style="display:none"></div>
+      <div id="breach-email-list"></div>
+      <div id="breach-email-empty"  class="empty" style="display:none;padding:10px 0;font-size:11px"></div>
+
+    </div>
+  </div>
+
+  <!-- Add / Edit Password view -->
+  <div id="view-password-form" class="view" style="display:none">
+    <button id="btn-form-back" class="back-btn">← Back</button>
+    <h3 class="section-title" id="form-title">Add Password</h3>
+    <form id="form-password" autocomplete="off">
+      <label class="field-label">Website</label>
+      <input id="form-website"      type="text"     placeholder="example.com"      class="field" required />
+      <label class="field-label">Username / Email</label>
+      <input id="form-username"     type="text"     placeholder="you@example.com"  class="field" required />
+      <label class="field-label">Password</label>
+      <input id="form-password-val" type="password" placeholder="Password"         class="field" required />
+      <div id="form-error" class="error-msg" style="display:none"></div>
+      <button type="submit" id="btn-form-save" class="btn-primary">Save</button>
+    </form>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

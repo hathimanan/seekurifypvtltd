@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "Seekurify",
+  "version": "1.0.0",
+  "description": "Autofill, save, and update passwords from your Seekurify vault",
+  "permissions": ["storage", "activeTab", "scripting", "tabs", "sidePanel"],
+  "host_permissions": ["http://*/*", "https://*/*", "file://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file://*/*"],
+      "js": ["content.js", "link-scanner.js", "breach-checker.js", "password-generator.js", "qr-detector.js"],
+      "css": ["content.css", "link-scanner.css", "breach-checker.css", "password-generator.css", "qr-detector.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.bing.com/chat*",
+        "https://perplexity.ai/*",
+        "https://www.perplexity.ai/*",
+        "https://character.ai/*",
+        "https://www.character.ai/*"
+      ],
+      "js": ["pii-checker.js", "injection-checker.js"],
+      "css": ["pii-checker.css", "injection-checker.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://mail.yahoo.com/*",
+        "https://mail.proton.me/*",
+        "https://protonmail.com/*"
+      ],
+      "js": ["phishing-checker.js"],
+      "css": ["phishing-checker.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "popup/popup.html"
+  },
+  "action": {
+    "default_title": "Seekurify"
+  }
+}

@@ -1,0 +1,12 @@
+/* Seekurify Link Scanner — host element only.
+   All tooltip styles live inside the Shadow DOM (link-scanner.js SHADOW_CSS).
+   This file just ensures the injected host div is positioned correctly
+   even if the host page resets position/display on all elements. */
+
+[data-sk-ls] {
+  position: absolute !important;
+  z-index: 2147483647 !important;
+  width: 280px !important;
+  pointer-events: none !important;
+  display: block !important;
+}

@@ -1,0 +1,128 @@
+/* ── Seekurify QR Code Phishing Detector — overlay styles ─────────────────── */
+
+.sk-qr-wrapper {
+  position: relative !important;
+  display: inline-block !important;
+  line-height: 0 !important;
+}
+
+.sk-qr-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  padding: 8px 6px !important;
+  border-radius: 6px !important;
+  z-index: 2147483646 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 11px !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  animation: sk-qr-in 0.18s ease !important;
+  overflow: hidden !important;
+}
+
+.sk-qr-suspicious {
+  background: rgba(146, 64, 14, 0.93) !important;
+  border: 2px solid #f59e0b !important;
+  color: #fef3c7 !important;
+}
+
+.sk-qr-malicious {
+  background: rgba(127, 0, 0, 0.94) !important;
+  border: 2px solid #ef4444 !important;
+  color: #fff1f2 !important;
+}
+
+.sk-qr-icon {
+  all: initial !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  display: block !important;
+}
+
+.sk-qr-title {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: inherit !important;
+  line-height: 1.3 !important;
+}
+
+.sk-qr-suspicious .sk-qr-title { color: #fef3c7 !important; }
+.sk-qr-malicious  .sk-qr-title { color: #fecaca !important; }
+
+.sk-qr-url {
+  all: initial !important;
+  display: block !important;
+  font-family: 'SF Mono', 'Fira Code', monospace !important;
+  font-size: 9px !important;
+  color: inherit !important;
+  opacity: 0.8 !important;
+  word-break: break-all !important;
+  max-width: 90% !important;
+  line-height: 1.3 !important;
+}
+
+.sk-qr-reason {
+  all: initial !important;
+  display: block !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 9px !important;
+  color: inherit !important;
+  opacity: 0.75 !important;
+  font-style: italic !important;
+  line-height: 1.3 !important;
+  max-width: 90% !important;
+}
+
+.sk-qr-actions {
+  all: initial !important;
+  display: flex !important;
+  gap: 5px !important;
+  margin-top: 5px !important;
+}
+
+.sk-qr-block,
+.sk-qr-dismiss {
+  all: initial !important;
+  cursor: pointer !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 3px 10px !important;
+  border-radius: 5px !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+  transition: opacity 0.1s !important;
+}
+
+.sk-qr-block {
+  background: #ef4444 !important;
+  color: #fff !important;
+  border: 1px solid #b91c1c !important;
+}
+
+.sk-qr-suspicious .sk-qr-block {
+  background: #d97706 !important;
+  border-color: #92400e !important;
+}
+
+.sk-qr-dismiss {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.sk-qr-block:hover   { opacity: 0.85 !important; }
+.sk-qr-dismiss:hover { background: rgba(255, 255, 255, 0.3) !important; }
+
+@keyframes sk-qr-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1);    }
+}
