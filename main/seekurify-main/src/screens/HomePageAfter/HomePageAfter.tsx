@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import {
-  Shield, ShieldAlert, ShieldCheck, Eye, ScanEye, Bot,
-  FileSearch, KeyRound, BarChart3, Globe, Target, Cpu,
-  Fingerprint, AlertTriangle, BookOpen, Lightbulb, ChevronRight, Users,
-  Activity, Zap, Lock
+  Shield, ShieldCheck, Bot,
+  FileSearch, KeyRound, Globe,
+  AlertTriangle, BookOpen, Lightbulb, ChevronRight,
+  Activity, Lock
 } from "lucide-react";
 
 // ─── Security Tips ────────────────────────────────────────────────────────────
@@ -58,15 +58,8 @@ export const HomePageAfter = (): JSX.Element => {
   const [showPasswordExpiryModal, setShowPasswordExpiryModal] = useState(false);
   const [expireAfterDays, setExpireAfterDays] = useState(null);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [siteShieldEnabled, setSiteShieldEnabled] = useState<boolean>(false);
-  const [promptInjectionEnabled, setPromptInjectionEnabled] = useState<boolean>(false);
-  const [threatDetectionEnabled, setThreatDetectionEnabled] = useState<boolean>(false);
-  const [aiSecuritySuiteEnabled, setAiSecuritySuiteEnabled] = useState<boolean>(false);
   const [identityAccessEnabled, setIdentityAccessEnabled] = useState<boolean>(false);
-  const [webInfraEnabled, setWebInfraEnabled] = useState<boolean>(false);
-  const [teamsEnabled, setTeamsEnabled] = useState<boolean>(false);
   const [learnSecureEnabled, setLearnSecureEnabled] = useState<boolean>(false);
-  const [featuresLoaded, setFeaturesLoaded] = useState(false);
 
   // Greeting based on time of day
   const getGreeting = () => {
@@ -86,18 +79,10 @@ export const HomePageAfter = (): JSX.Element => {
         });
         if (!res.ok) throw new Error("Failed to fetch feature flags");
         const data = await res.json();
-        setSiteShieldEnabled(data.siteShieldEnabled === true);
-        setPromptInjectionEnabled(data.promptInjectionEnabled === true);
-        setThreatDetectionEnabled(data.threatDetectionEnabled !== false);
-        setAiSecuritySuiteEnabled(data.aiSecuritySuiteEnabled !== false);
         setIdentityAccessEnabled(data.identityAccessEnabled !== false);
-        setWebInfraEnabled(data.webInfraEnabled !== false);
-        setTeamsEnabled(data.teamsEnabled !== false);
         setLearnSecureEnabled(data.learnSecureEnabled !== false);
       } catch (err) {
         console.error("❌ Failed to load feature flags:", err);
-      } finally {
-        setFeaturesLoaded(true);
       }
     };
     fetchFeatureFlags();
@@ -163,68 +148,7 @@ export const HomePageAfter = (): JSX.Element => {
       groupFlag: identityAccessEnabled,
       tools: [
         { title: "Password Vault", description: "Store and manage credentials in an encrypted vault.", path: "/dashboard", icon: KeyRound, color: "from-sky-600 to-sky-800" },
-        { title: "SIEM Dashboard", description: "Monitor security events, logs, and threat analytics.", path: "/siem-dashboard", icon: BarChart3, color: "from-slate-600 to-sky-700" },
-      ],
-    },
-    {
-      id: "threat",
-      label: "Threat Detection",
-      description: "Identify malware and synthetic media threats.",
-      icon: ShieldAlert,
-      accentColor: "text-orange-600 dark:text-orange-400",
-      borderColor: "border-orange-400",
-      bgColor: "bg-orange-50 dark:bg-orange-950/40",
-      groupFlag: threatDetectionEnabled,
-      tools: [
-        { title: "Malware Analyzer", description: "Upload and scan files for viruses, trojans, and malware.", path: "/malware-analysis", icon: FileSearch, color: "from-orange-600 to-orange-800" },
-        { title: "Deepfake Detector", description: "Detect AI-generated deepfake images and media.", path: "/deepfake-detector", icon: ScanEye, color: "from-orange-500 to-red-700" },
-        { title: "SOAR Center", description: "Orchestrate automated incident response playbooks and workflows.", path: "/soar", icon: Zap, color: "from-purple-600 to-orange-700" },
-      ],
-    },
-    {
-      id: "ai-security",
-      label: "AI Security Suite",
-      description: "Secure AI systems, pipelines, and data flows.",
-      icon: Cpu,
-      accentColor: "text-cyan-600 dark:text-cyan-400",
-      borderColor: "border-cyan-500",
-      bgColor: "bg-cyan-50 dark:bg-cyan-950/40",
-      groupFlag: aiSecuritySuiteEnabled,
-      tools: [
-        { title: "AI Red-Team Agent", description: "Autonomously probe AI systems for prompt injection vulnerabilities.", path: "/red-team", icon: Target, color: "from-cyan-600 to-slate-700", badge: "AI" },
-        { title: "AI Agent Scanner", description: "Evaluate agentic AI pipelines for security weaknesses.", path: "/ai-agent-scanner", icon: Cpu, color: "from-cyan-700 to-cyan-900", badge: "AI" },
-        { title: "Prompt Injection Scanner", description: "Detect prompt injection vulnerabilities in AI-integrated systems.", path: "/injection-scanner", icon: ShieldAlert, color: "from-slate-600 to-cyan-700", badge: "AI", featureFlag: promptInjectionEnabled || !featuresLoaded },
-        { title: "PII Detector", description: "Scan text and documents for personally identifiable information leakage.", path: "/pii-detector", icon: Fingerprint, color: "from-cyan-500 to-cyan-800", badge: "AI" },
-      ],
-    },
-    {
-      id: "web-infra",
-      label: "Web & Infrastructure Security",
-      description: "Audit and harden sites, headers, and external-facing assets.",
-      icon: Globe,
-      accentColor: "text-teal-600 dark:text-teal-400",
-      borderColor: "border-teal-400",
-      bgColor: "bg-teal-50 dark:bg-teal-950/40",
-      groupFlag: webInfraEnabled,
-      tools: [
-        { title: "Watch Agent", description: "Continuously monitor watchlist items for emerging threats.", path: "/watch-agent", icon: Eye, color: "from-teal-600 to-teal-800" },
-        { title: "Firewall", description: "Monitor and manage network firewall rules and traffic events.", path: "/firewall", icon: Shield, color: "from-slate-700 to-teal-600" },
-        { title: "Site Shield & Audit", description: "Audit websites for security headers, SSL, and misconfigurations.", path: "/site-shield", icon: Globe, color: "from-slate-600 to-teal-700", featureFlag: siteShieldEnabled || !featuresLoaded },
-        { title: "CSP Builder", description: "Build and validate Content Security Policy headers for your site.", path: "/csp-builder", icon: ShieldCheck, color: "from-teal-700 to-teal-900" },
-      ],
-    },
-    {
-      id: "teams",
-      label: "Teams & Findings",
-      description: "Collaborate on remediation and shared security workspaces.",
-      icon: Users,
-      accentColor: "text-amber-600 dark:text-amber-400",
-      borderColor: "border-amber-400",
-      bgColor: "bg-amber-50 dark:bg-amber-950/40",
-      groupFlag: teamsEnabled,
-      tools: [
-        { title: "Findings", description: "Track, prioritize, and update remediation work from scan results.", path: "/findings", icon: ShieldAlert, color: "from-amber-500 to-amber-700" },
-        { title: "Team Workspaces", description: "Share vaults, members, and security operations with your team.", path: "/workspaces", icon: Users, color: "from-slate-600 to-amber-700" },
+        { title: "Breach Control", description: "Check your credentials and email against known data breaches.", path: "/breach-control", icon: Shield, color: "from-slate-600 to-sky-700" },
       ],
     },
     {
@@ -338,10 +262,10 @@ export const HomePageAfter = (): JSX.Element => {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => navigate("/red-team")}
+                onClick={() => navigate("/dashboard")}
                 className="mt-4 inline-flex items-center gap-2 bg-amber-400 text-slate-900 font-semibold text-sm px-4 py-2 rounded-lg shadow hover:bg-amber-300 transition-colors"
               >
-                <Zap className="w-4 h-4" /> Run AI Red-Team Scan
+                <KeyRound className="w-4 h-4" /> Open Password Vault
               </motion.button>
             </div>
           </motion.div>

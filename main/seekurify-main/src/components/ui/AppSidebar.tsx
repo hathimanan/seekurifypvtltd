@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  FileSearch, KeyRound, BarChart3, ShieldCheck, Phone,
-  Shield, Eye, ShieldAlert, Globe, ScanEye, Bot, Zap, Target, Users, FileText, Activity, Radio, ShieldOff,
+  KeyRound, ShieldCheck, Phone,
+  Shield, ShieldOff,
   BookOpen, Code2,
 } from "lucide-react";
 import { API_BASE_URL } from "../../services/api";
@@ -17,13 +17,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ sidebarExpanded, setSidebarExpa
   const navigate  = useNavigate();
   const location  = useLocation();
 
-  const [siteShieldEnabled, setSiteShieldEnabled]   = useState(false);
-  const [injectionEnabled, setInjectionEnabled]     = useState(false);
-  const [threatDetectionEnabled, setThreatDetectionEnabled] = useState(false);
-  const [aiSecuritySuiteEnabled, setAiSecuritySuiteEnabled] = useState(false);
   const [identityAccessEnabled, setIdentityAccessEnabled]   = useState(false);
-  const [webInfraEnabled, setWebInfraEnabled]               = useState(false);
-  const [teamsEnabled, setTeamsEnabled]                     = useState(false);
   const [learnSecureEnabled, setLearnSecureEnabled]         = useState(false);
 
   useEffect(() => {
@@ -33,13 +27,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ sidebarExpanded, setSidebarExpa
     })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => {
-        setSiteShieldEnabled(d.siteShieldEnabled === true);
-        setInjectionEnabled(d.promptInjectionEnabled === true);
-        setThreatDetectionEnabled(d.threatDetectionEnabled !== false);
-        setAiSecuritySuiteEnabled(d.aiSecuritySuiteEnabled !== false);
         setIdentityAccessEnabled(d.identityAccessEnabled !== false);
-        setWebInfraEnabled(d.webInfraEnabled !== false);
-        setTeamsEnabled(d.teamsEnabled !== false);
         setLearnSecureEnabled(d.learnSecureEnabled !== false);
       })
       .catch(() => {});
@@ -54,37 +42,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ sidebarExpanded, setSidebarExpa
       groupIcon: <KeyRound className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-sky-400", groupFlag: identityAccessEnabled,
       items: [
         { label: "Password Manager",        path: "/dashboard",        icon: <KeyRound  className="w-5 h-5 flex-shrink-0" /> },
-        { label: "System Events Dashboard", path: "/siem-dashboard",   icon: <BarChart3 className="w-5 h-5 flex-shrink-0" /> },
-        { label: "Identity Risk",           path: "/identity-risk",    icon: <Activity  className="w-5 h-5 flex-shrink-0" /> },
-        { label: "Blast Radius Analyzer",   path: "/blast-radius",     icon: <Radio     className="w-5 h-5 flex-shrink-0" /> },
         { label: "Breach Control",          path: "/breach-control",   icon: <ShieldOff className="w-5 h-5 flex-shrink-0" /> },
-      ],
-    },
-    {
-      id: "threat", label: "Threat Detection",
-      groupIcon: <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-orange-400", groupFlag: threatDetectionEnabled,
-      items: [
-        { label: "Analyze Malware",   path: "/malware-analysis",  icon: <FileSearch  className="w-5 h-5 flex-shrink-0" /> },
-        { label: "DeepFake Detector", path: "/deepfake-detector", icon: <ScanEye     className="w-5 h-5 flex-shrink-0" /> },
-      ],
-    },
-    {
-      id: "ai-security", label: "AI Security Suite",
-      groupIcon: <Target className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-cyan-400", groupFlag: aiSecuritySuiteEnabled,
-      items: [
-        { label: "AI Red-Team Agent", path: "/red-team",         icon: <Target className="w-5 h-5 flex-shrink-0" /> },
-        { label: "AI Agent Scanner",  path: "/ai-agent-scanner", icon: <Bot    className="w-5 h-5 flex-shrink-0" /> },
-        ...(injectionEnabled ? [{ label: "AI Injection Scanner", path: "/injection-scanner", icon: <Zap className="w-5 h-5 flex-shrink-0" /> }] : []),
-      ],
-    },
-    {
-      id: "web-infra", label: "Web & Infrastructure",
-      groupIcon: <Globe className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-teal-400", groupFlag: webInfraEnabled,
-      items: [
-        { label: "AI Firewall (WAF)", path: "/firewall",   icon: <Shield     className="w-5 h-5 flex-shrink-0" /> },
-        { label: "Watch Agent",       path: "/watch-agent", icon: <Eye        className="w-5 h-5 flex-shrink-0" /> },
-        { label: "CSP Builder",       path: "/csp-builder", icon: <ShieldCheck className="w-5 h-5 flex-shrink-0" /> },
-        ...(siteShieldEnabled ? [{ label: "SiteShield Audit", path: "/site-shield", icon: <Globe className="w-5 h-5 flex-shrink-0" /> }] : []),
       ],
     },
     {
@@ -92,15 +50,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ sidebarExpanded, setSidebarExpa
       groupIcon: <Shield className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-lime-400", groupFlag: learnSecureEnabled,
       items: [
         { label: "Security Awareness", path: "/securityAwareness", icon: <ShieldCheck className="w-5 h-5 flex-shrink-0" /> },
-      ],
-    },
-    {
-      id: "workspaces", label: "Team Workspaces",
-      groupIcon: <Users className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-amber-400", groupFlag: teamsEnabled,
-      items: [
-        { label: "Findings", path: "/findings", icon: <ShieldAlert className="w-5 h-5 flex-shrink-0" /> },
-        { label: "SOAR", path: "/soar", icon: <Zap className="w-5 h-5 flex-shrink-0" /> },
-        { label: "Workspaces", path: "/workspaces", icon: <Users className="w-5 h-5 flex-shrink-0" /> },
       ],
     },
     {
@@ -115,8 +64,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ sidebarExpanded, setSidebarExpa
       id: "misc", label: "More",
       groupIcon: <Phone className="w-3.5 h-3.5 flex-shrink-0" />, accentColor: "text-gray-400",
       items: [
-        { label: "Log Report",             path: "/log-report",     icon: <FileText   className="w-5 h-5 flex-shrink-0" /> },
-        { label: "Prompt Privacy Scanner", path: "/prompt-scanner", icon: <Shield className="w-5 h-5 flex-shrink-0" /> },
         { label: "Contact Us",             path: "/contact",        icon: <Phone  className="w-5 h-5 flex-shrink-0" /> },
       ],
     },

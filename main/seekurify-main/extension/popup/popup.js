@@ -24,8 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindStaticEvents();
   bindPasswordFormEvents();
   bindVaultRefresh();
-  bindPiiEvents();
-  bindInjectionEvents();
   bindPhishingEvents();
   bindBreachEvents();
   bindLinkScanToggle();
@@ -34,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ── View switchers ─────────────────────────────────────────────────────────────
 const AUTH_VIEWS   = ['view-login','view-otp','view-pin'];
-const MAIN_VIEWS   = ['view-vault','view-audit','view-pii','view-injection','view-phishing','view-breach','view-settings','view-password-form'];
+const MAIN_VIEWS   = ['view-vault','view-audit','view-phishing','view-breach','view-settings','view-password-form'];
 const ALL_VIEWS    = [...AUTH_VIEWS, ...MAIN_VIEWS];
 
 function hideAll() { ALL_VIEWS.forEach(v => hide(v)); }
@@ -68,18 +66,6 @@ function showAudit() {
   show('header-actions'); show('tab-bar'); show('view-audit');
   setActiveTab('audit');
   initAuditView();
-}
-async function showPii() {
-  hideAll();
-  show('header-actions'); show('tab-bar'); show('view-pii');
-  setActiveTab('pii');
-  await loadPiiView();
-}
-async function showInjection() {
-  hideAll();
-  show('header-actions'); show('tab-bar'); show('view-injection');
-  setActiveTab('injection');
-  await loadInjectionView();
 }
 async function showPhishing() {
   hideAll();
@@ -252,8 +238,6 @@ function bindStaticEvents() {
     btn.addEventListener('click', () => {
       if (btn.dataset.tab === 'vault') showVault();
       else if (btn.dataset.tab === 'audit') showAudit();
-      else if (btn.dataset.tab === 'pii') showPii();
-      else if (btn.dataset.tab === 'injection') showInjection();
       else if (btn.dataset.tab === 'phishing')  showPhishing();
       else if (btn.dataset.tab === 'breach')    showBreach();
     });
@@ -704,73 +688,6 @@ function setCheck(id, ok, label) {
   el.querySelector('.chk-label').textContent = label;
 }
 
-// ── Privacy / PII tab ──────────────────────────────────────────────────────────
-const SEV_ORDER_PII = { critical: 0, high: 1, medium: 2, low: 3 };
-
-async function loadPiiView() {
-  const { pii_monitoring_enabled = true } = await chrome.storage.local.get('pii_monitoring_enabled');
-  renderPiiToggle(pii_monitoring_enabled);
-
-  if (!pii_monitoring_enabled) {
-    hide('pii-log-list'); hide('pii-log-empty'); hide('pii-stats-row');
-    show('pii-disabled-msg');
-    return;
-  }
-
-  show('pii-stats-row'); hide('pii-disabled-msg');
-  const log = await chrome.runtime.sendMessage({ type: 'GET_PII_LOG' });
-  renderPiiLog(Array.isArray(log) ? log : []);
-}
-
-function renderPiiToggle(enabled) {
-  const btn = $('pii-toggle-btn');
-  btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-}
-
-function renderPiiLog(log) {
-  const total     = log.length;
-  const submitted = log.filter(e => e.submitted).length;
-  const critical  = log.filter(e => e.findings?.some(f => f.severity === 'critical')).length;
-
-  $('pii-stat-total').textContent     = total;
-  $('pii-stat-submitted').textContent = submitted;
-  $('pii-stat-critical').textContent  = critical;
-
-  const list = $('pii-log-list');
-  list.innerHTML = '';
-
-  if (!log.length) {
-    hide('pii-log-list'); show('pii-log-empty'); return;
-  }
-  show('pii-log-list'); hide('pii-log-empty');
-
-  log.forEach(entry => {
-    const findings = entry.findings || [];
-    const topSev = findings.sort((a, b) =>
-      (SEV_ORDER_PII[a.severity] ?? 4) - (SEV_ORDER_PII[b.severity] ?? 4)
-    )[0]?.severity || 'medium';
-
-    const tags = findings.map(f =>
-      `<span class="pii-tag pii-tag-${f.severity}">${escHtml(f.label)}</span>`
-    ).join('');
-
-    const timeAgo = formatTimeAgo(entry.timestamp);
-
-    const el = document.createElement('div');
-    el.className = `pii-entry has-${topSev}`;
-    el.innerHTML = `
-      <div class="pii-entry-header">
-        <span class="pii-entry-platform">${escHtml(entry.platform)}</span>
-        <div class="pii-entry-meta">
-          ${entry.submitted ? '<span class="pii-submitted-badge">Submitted</span>' : ''}
-          <span class="pii-entry-time">${timeAgo}</span>
-        </div>
-      </div>
-      <div class="pii-tags">${tags}</div>`;
-    list.appendChild(el);
-  });
-}
-
 function formatTimeAgo(ts) {
   const diff = Date.now() - ts;
   if (diff < 60_000)  return 'just now';
@@ -779,114 +696,12 @@ function formatTimeAgo(ts) {
   return new Date(ts).toLocaleDateString();
 }
 
-function bindPiiEvents() {
-  $('pii-toggle-btn').addEventListener('click', async () => {
-    const { pii_monitoring_enabled = true } = await chrome.storage.local.get('pii_monitoring_enabled');
-    const next = !pii_monitoring_enabled;
-    await chrome.storage.local.set({ pii_monitoring_enabled: next });
-    renderPiiToggle(next);
-    await loadPiiView();
-  });
-
-  $('btn-clear-pii').addEventListener('click', async () => {
-    await chrome.runtime.sendMessage({ type: 'CLEAR_PII_LOG' });
-    renderPiiLog([]);
-  });
-}
-
-// Refresh PII/injection/phishing logs when background writes detections to session storage
+// Refresh the phishing log when background writes detections to session storage
 chrome.storage.session.onChanged.addListener(changes => {
-  if ('pii_log' in changes && $('view-pii')?.style.display !== 'none') {
-    loadPiiView();
-  }
-  if ('injection_log' in changes && $('view-injection')?.style.display !== 'none') {
-    loadInjectionView();
-  }
   if ('phishing_log' in changes && $('view-phishing')?.style.display !== 'none') {
     loadPhishingView();
   }
 });
-
-// ── Injection view ─────────────────────────────────────────────────────────────
-const SEV_ORDER_INJ = { critical: 0, high: 1, medium: 2, low: 3 };
-
-async function loadInjectionView() {
-  const { injection_monitoring_enabled = true } = await chrome.storage.local.get('injection_monitoring_enabled');
-  renderInjectionToggle(injection_monitoring_enabled);
-
-  if (!injection_monitoring_enabled) {
-    hide('inj-log-list'); hide('inj-log-empty'); hide('inj-stats-row');
-    show('inj-disabled-msg');
-    return;
-  }
-
-  show('inj-stats-row'); hide('inj-disabled-msg');
-  const log = await chrome.runtime.sendMessage({ type: 'GET_INJECTION_LOG' });
-  renderInjectionLog(Array.isArray(log) ? log : []);
-}
-
-function renderInjectionToggle(enabled) {
-  const btn = $('inj-toggle-btn');
-  if (btn) btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-}
-
-function renderInjectionLog(log) {
-  const total     = log.length;
-  const submitted = log.filter(e => e.submitted).length;
-  const critical  = log.filter(e => e.findings?.some(f => f.severity === 'critical')).length;
-
-  $('inj-stat-total').textContent     = total;
-  $('inj-stat-submitted').textContent = submitted;
-  $('inj-stat-critical').textContent  = critical;
-
-  const list = $('inj-log-list');
-  list.innerHTML = '';
-
-  if (!log.length) {
-    hide('inj-log-list'); show('inj-log-empty'); return;
-  }
-  show('inj-log-list'); hide('inj-log-empty');
-
-  log.forEach(entry => {
-    const findings = entry.findings || [];
-    const topSev = [...findings].sort((a, b) =>
-      (SEV_ORDER_INJ[a.severity] ?? 4) - (SEV_ORDER_INJ[b.severity] ?? 4)
-    )[0]?.severity || 'medium';
-
-    const tags = findings.map(f =>
-      `<span class="pii-tag pii-tag-${f.severity}">${escHtml(f.label)}</span>`
-    ).join('');
-
-    const el = document.createElement('div');
-    el.className = `pii-entry has-${topSev}`;
-    el.innerHTML = `
-      <div class="pii-entry-header">
-        <span class="pii-entry-platform">${escHtml(entry.platform)}</span>
-        <div class="pii-entry-meta">
-          ${entry.submitted ? '<span class="pii-submitted-badge">Submitted</span>' : ''}
-          <span class="pii-entry-time">${formatTimeAgo(entry.timestamp)}</span>
-        </div>
-      </div>
-      ${entry.snippet ? `<div style="font-size:10px;color:#64748b;margin:3px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(entry.snippet)}</div>` : ''}
-      <div class="pii-tags">${tags}</div>`;
-    list.appendChild(el);
-  });
-}
-
-function bindInjectionEvents() {
-  $('inj-toggle-btn').addEventListener('click', async () => {
-    const { injection_monitoring_enabled = true } = await chrome.storage.local.get('injection_monitoring_enabled');
-    const next = !injection_monitoring_enabled;
-    await chrome.storage.local.set({ injection_monitoring_enabled: next });
-    renderInjectionToggle(next);
-    await loadInjectionView();
-  });
-
-  $('btn-clear-inj').addEventListener('click', async () => {
-    await chrome.runtime.sendMessage({ type: 'CLEAR_INJECTION_LOG' });
-    renderInjectionLog([]);
-  });
-}
 
 // ── Phishing view ──────────────────────────────────────────────────────────────
 const SEV_ORDER_PHI = { critical: 0, high: 1, medium: 2, low: 3 };

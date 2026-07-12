@@ -17,23 +17,6 @@
     },
     {
       "matches": [
-        "https://chat.openai.com/*",
-        "https://chatgpt.com/*",
-        "https://claude.ai/*",
-        "https://gemini.google.com/*",
-        "https://copilot.microsoft.com/*",
-        "https://www.bing.com/chat*",
-        "https://perplexity.ai/*",
-        "https://www.perplexity.ai/*",
-        "https://character.ai/*",
-        "https://www.character.ai/*"
-      ],
-      "js": ["pii-checker.js", "injection-checker.js"],
-      "css": ["pii-checker.css", "injection-checker.css"],
-      "run_at": "document_idle"
-    },
-    {
-      "matches": [
         "https://mail.google.com/*",
         "https://outlook.live.com/*",
         "https://outlook.office.com/*",

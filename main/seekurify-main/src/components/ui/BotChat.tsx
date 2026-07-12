@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import SecurityChatbotIcon from "./ChatbotIcon";
 import defaultProfileIcon from "../../assets/default-profile.png";
-import { MediaKey, mediaLibrary } from "../chatbot/richMediaLibrary";
+import { MediaKey, mediaLibrary } from "./richMediaLibrary";
 import { Brain, AlertTriangle, Loader2, Sparkles } from "lucide-react";
 import { API_BASE_URL } from "../../services/api";
 

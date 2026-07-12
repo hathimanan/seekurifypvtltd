@@ -30,14 +30,6 @@
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       Audit
     </button>
-    <button id="tab-pii" class="tab-btn" data-tab="pii">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      Privacy
-    </button>
-    <button id="tab-injection" class="tab-btn" data-tab="injection">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      Inject
-    </button>
     <button id="tab-phishing" class="tab-btn" data-tab="phishing">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       Phishing
@@ -194,104 +186,6 @@
       </div>
 
     </div>
-  </div>
-
-  <!-- Privacy / PII monitor view -->
-  <div id="view-pii" class="view" style="display:none">
-
-    <!-- Monitoring toggle -->
-    <div class="pii-toggle-row">
-      <div class="pii-toggle-label">
-        <div class="pii-toggle-title">AI Prompt Monitoring</div>
-        <div class="pii-toggle-sub">Scans ChatGPT, Claude, Gemini &amp; more</div>
-      </div>
-      <button id="pii-toggle-btn" class="pii-toggle" aria-pressed="true">
-        <span class="pii-toggle-knob"></span>
-      </button>
-    </div>
-
-    <!-- Session stats -->
-    <div id="pii-stats-row" class="pii-stats-row">
-      <div class="pii-stat">
-        <div id="pii-stat-total" class="pii-stat-val">0</div>
-        <div class="pii-stat-label">Detections</div>
-      </div>
-      <div class="pii-stat">
-        <div id="pii-stat-submitted" class="pii-stat-val">0</div>
-        <div class="pii-stat-label">Submitted</div>
-      </div>
-      <div class="pii-stat">
-        <div id="pii-stat-critical" class="pii-stat-val pii-critical-val">0</div>
-        <div class="pii-stat-label">Critical</div>
-      </div>
-    </div>
-
-    <!-- Log header -->
-    <div class="pii-log-header">
-      <span class="section-label" style="padding:0">This session</span>
-      <button id="btn-clear-pii" class="link-btn" style="font-size:11px">Clear</button>
-    </div>
-
-    <!-- Detection list -->
-    <div id="pii-log-list"></div>
-    <div id="pii-log-empty" class="empty" style="display:none">
-      No PII detected yet.<br>Visit ChatGPT, Claude, or Gemini to start monitoring.
-    </div>
-
-    <!-- Disabled overlay -->
-    <div id="pii-disabled-msg" class="empty" style="display:none">
-      Monitoring is paused.<br>Toggle on to resume.
-    </div>
-
-  </div>
-
-  <!-- Injection monitor view -->
-  <div id="view-injection" class="view" style="display:none">
-
-    <!-- Monitoring toggle -->
-    <div class="pii-toggle-row">
-      <div class="pii-toggle-label">
-        <div class="pii-toggle-title">Injection Monitoring</div>
-        <div class="pii-toggle-sub">Detects SQL, prompt injection &amp; more</div>
-      </div>
-      <button id="inj-toggle-btn" class="pii-toggle" aria-pressed="true">
-        <span class="pii-toggle-knob"></span>
-      </button>
-    </div>
-
-    <!-- Session stats -->
-    <div id="inj-stats-row" class="pii-stats-row">
-      <div class="pii-stat">
-        <div id="inj-stat-total" class="pii-stat-val">0</div>
-        <div class="pii-stat-label">Detections</div>
-      </div>
-      <div class="pii-stat">
-        <div id="inj-stat-submitted" class="pii-stat-val">0</div>
-        <div class="pii-stat-label">Submitted</div>
-      </div>
-      <div class="pii-stat">
-        <div id="inj-stat-critical" class="pii-stat-val pii-critical-val">0</div>
-        <div class="pii-stat-label">Critical</div>
-      </div>
-    </div>
-
-    <!-- Log header -->
-    <div class="pii-log-header">
-      <span class="section-label" style="padding:0">This session</span>
-      <button id="btn-clear-inj" class="link-btn" style="font-size:11px">Clear</button>
-    </div>
-
-    <!-- Detection list -->
-    <div id="inj-log-list"></div>
-    <div id="inj-log-empty" class="empty" style="display:none">
-      No injections detected yet.<br>Visit ChatGPT, Claude, or Gemini to start monitoring.
-    </div>
-
-    <!-- Disabled overlay -->
-    <div id="inj-disabled-msg" class="empty" style="display:none">
-      Monitoring is paused.<br>Toggle on to resume.
-    </div>
-
   </div>
 
   <!-- Phishing monitor view -->

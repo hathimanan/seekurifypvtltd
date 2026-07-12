@@ -39,6 +39,10 @@ type UserType = {
 
 // ── User type definitions ─────────────────────────────────────────────────────
 
+// Note: several advanced modules (SIEM, AI Security Suite, SOAR, Watch Agent,
+// SiteShield, CSP Builder, Team Workspaces, etc.) have been removed from this
+// repo, so the ai_teams/security_professional presets below only reference the
+// flags that still exist.
 const USER_TYPES: UserType[] = [
   {
     id: "individual",
@@ -62,9 +66,7 @@ const USER_TYPES: UserType[] = [
     borderColor: "border-emerald-500",
     flags: [
       "otp_verification", "pin_verification_password_manager", "password_vault",
-      "siem_dashboard", "security_chatbot", "ai_red_team", "ai_agent_scanner",
-      "prompt_injection", "pii_detector", "malware_analyzer", "deepfake_detector",
-      "ai_security_suite_group", "threat_detection_group",
+      "security_chatbot",
     ],
   },
   {
@@ -75,13 +77,9 @@ const USER_TYPES: UserType[] = [
     textColor: "text-orange-400",
     borderColor: "border-orange-500",
     flags: [
-      "otp_verification", "pin_verification_password_manager", "pin_verification_siem",
-      "password_vault", "siem_dashboard", "security_chatbot",
-      "malware_analyzer", "deepfake_detector", "phishing_detector",
-      "watch_agent", "csp_builder", "site_shield",
-      "findings_board", "team_workspaces", "security_awareness",
-      "insights", "threat_detection_group",
-      "web_infra_group", "teams_group", "learn_secure_group",
+      "otp_verification", "pin_verification_password_manager",
+      "password_vault", "security_chatbot",
+      "security_awareness", "insights", "learn_secure_group",
     ],
   },
   {
@@ -98,12 +96,8 @@ const USER_TYPES: UserType[] = [
 // ── Flag categories (for grouping within a user-type view) ────────────────────
 
 const FLAG_CATEGORIES: Record<string, string[]> = {
-  "Identity & Access":    ["password_vault", "siem_dashboard", "identity_access_group"],
-  "Authentication":       ["otp_verification", "pin_verification_password_manager", "pin_verification_siem"],
-  "Threat Detection":     ["malware_analyzer", "deepfake_detector", "phishing_detector", "threat_detection_group"],
-  "AI Security":          ["ai_red_team", "ai_agent_scanner", "prompt_injection", "pii_detector", "ai_security_suite_group"],
-  "Web & Infrastructure": ["watch_agent", "csp_builder", "site_shield", "web_infra_group"],
-  "Team & Collaboration": ["findings_board", "team_workspaces", "teams_group"],
+  "Identity & Access":    ["password_vault", "identity_access_group"],
+  "Authentication":       ["otp_verification", "pin_verification_password_manager"],
   "Learning & Awareness": ["security_awareness", "insights", "security_chatbot", "learn_secure_group"],
 };
 

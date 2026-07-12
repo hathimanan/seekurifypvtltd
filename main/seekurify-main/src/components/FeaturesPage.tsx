@@ -5,18 +5,9 @@ import Footer from "./ui/FooterBeforeLogin";
 import { ArrowLeft } from "lucide-react";
 import {
   Lock,
-  FileSearch,
   Bell,
   Bot,
-  Syringe,
-  Eye,
-  ShieldCheck,
-  Code2,
-  Globe,
-  ScanFace,
-  Radar,
-  BarChart3,
-  Fish,
+  ShieldOff,
 } from "lucide-react";
 
 const features = [
@@ -28,81 +19,18 @@ const features = [
     category: "Core Security",
   },
   {
-    title: "Malware Analyzer",
+    title: "Breach Control",
     description:
-      "Upload files or scan URLs to detect malware, viruses, and suspicious indicators.",
-    icon: <FileSearch className="w-10 h-10 text-red-400" />,
-    category: "Threat Detection",
+      "Check your credentials and email against known data breaches using k-anonymity lookups.",
+    icon: <ShieldOff className="w-10 h-10 text-red-400" />,
+    category: "Core Security",
   },
   {
-    title: "Phishing Detector",
+    title: "Security Chatbot",
     description:
-      "Analyze URLs and emails to identify phishing attempts and social engineering attacks.",
-    icon: <Fish className="w-10 h-10 text-orange-400" />,
-    category: "Threat Detection",
-  },
-  {
-    title: "AI Agent Security Scanner",
-    description:
-      "Audit AI agents for vulnerabilities, unsafe behaviors, and alignment issues before deployment.",
+      "Chat with an AI security assistant for instant answers and guidance.",
     icon: <Bot className="w-10 h-10 text-sky-400" />,
-    category: "AI Security",
-  },
-  {
-    title: "AI Pipeline Red-Team Agent",
-    description:
-      "Autonomously red-team your AI pipelines to surface exploitable weaknesses and attack surfaces.",
-    icon: <Radar className="w-10 h-10 text-rose-400" />,
-    category: "AI Security",
-  },
-  {
-    title: "AI Injection Scanner",
-    description:
-      "Detect prompt injection, jailbreak attempts, and adversarial inputs targeting LLM-based systems.",
-    icon: <Syringe className="w-10 h-10 text-purple-400" />,
-    category: "AI Security",
-  },
-  {
-    title: "Privacy & PII Scanner",
-    description:
-      "Scan text and documents to identify personally identifiable information and privacy risks.",
-    icon: <Eye className="w-10 h-10 text-emerald-400" />,
-    category: "Privacy",
-  },
-  {
-    title: "DeepFake Detector",
-    description:
-      "Analyze images and media to detect AI-generated deepfakes and synthetic content.",
-    icon: <ScanFace className="w-10 h-10 text-pink-400" />,
-    category: "AI Security",
-  },
-  {
-    title: "CSP Builder",
-    description:
-      "Generate, validate, and fine-tune Content Security Policies to protect web applications from XSS.",
-    icon: <Code2 className="w-10 h-10 text-yellow-400" />,
-    category: "Web Security",
-  },
-  {
-    title: "SiteShield Audit",
-    description:
-      "Run comprehensive security audits on websites to uncover misconfigurations and vulnerabilities.",
-    icon: <Globe className="w-10 h-10 text-cyan-400" />,
-    category: "Web Security",
-  },
-  {
-    title: "WatchAgent",
-    description:
-      "Continuously monitor systems and services for anomalies, intrusions, and policy violations.",
-    icon: <ShieldCheck className="w-10 h-10 text-lime-400" />,
-    category: "Monitoring",
-  },
-  {
-    title: "SIEM Dashboard",
-    description:
-      "Aggregate security events and logs into a unified view for real-time threat correlation.",
-    icon: <BarChart3 className="w-10 h-10 text-indigo-400" />,
-    category: "Monitoring",
+    category: "Education",
   },
   {
     title: "Security Awareness",
@@ -114,12 +42,7 @@ const features = [
 ];
 
 const categoryColors: Record<string, string> = {
-  "AI Security": "text-sky-400 border-sky-700 bg-sky-900/20",
-  "Threat Detection": "text-red-400 border-red-700 bg-red-900/20",
   "Core Security": "text-amber-400 border-amber-700 bg-amber-900/20",
-  "Web Security": "text-cyan-400 border-cyan-700 bg-cyan-900/20",
-  Privacy: "text-emerald-400 border-emerald-700 bg-emerald-900/20",
-  Monitoring: "text-indigo-400 border-indigo-700 bg-indigo-900/20",
   Education: "text-yellow-400 border-yellow-700 bg-yellow-900/20",
 };
 

@@ -1027,12 +1027,17 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// Note: several advanced modules (SIEM, AI Security Suite, SOAR, Watch Agent,
+// SiteShield, CSP Builder, Team Workspaces, etc.) have been removed from this
+// repo, so groups that only ever granted those flags now resolve to an empty
+// list rather than being deleted outright — purchasing them is still a valid,
+// non-throwing no-op rather than an error.
 const FEATURE_GROUP_TO_FLAGS = {
-  identity: ["password_vault", "siem_dashboard"],
-  threat: ["malware_analyzer", "phishing_detector", "deepfake_detector"],
-  "ai-security": ["ai_red_team", "ai_agent_scanner", "prompt_injection", "pii_detector"],
-  "web-infra": ["watch_agent", "site_shield", "csp_builder"],
-  "team-workspaces": ["findings_board", "team_workspaces"],
+  identity: ["password_vault"],
+  threat: [],
+  "ai-security": [],
+  "web-infra": [],
+  "team-workspaces": [],
   learn: ["security_awareness", "insights", "security_chatbot"],
 };
 
