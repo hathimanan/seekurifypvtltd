@@ -52,6 +52,26 @@ async function hibpRangeCheck(sha1Hex) {
   }
 }
 
+// Shared by POST /check-password and the MCP check_password_breach tool.
+// Preserves k-anonymity: caller supplies only a 5-char SHA-1 prefix, this
+// returns candidate suffix+count pairs for the caller to match locally —
+// the full password/hash never needs to be sent anywhere.
+export async function hibpCheckPasswordPrefix(hashPrefix) {
+  const response = await fetch(`${HIBP_PASSWORD_API}/${hashPrefix.toUpperCase()}`, {
+    headers: { 'Add-Padding': 'true', 'User-Agent': USER_AGENT },
+  });
+  if (!response.ok) throw new Error(`HIBP status ${response.status}`);
+
+  const text = await response.text();
+  return text
+    .split('\r\n')
+    .filter(Boolean)
+    .map(line => {
+      const [suffix, count] = line.split(':');
+      return { suffix, count: parseInt(count, 10) };
+    });
+}
+
 // POST /api/hibp/check-password
 // Body: { hashPrefix: "5-char hex" }
 // Returns { suffixes: [{ suffix, count }] } — client-side k-anonymity lookup
@@ -62,20 +82,7 @@ hibpRouter.post('/check-password', async (req, res) => {
   }
 
   try {
-    const response = await fetch(`${HIBP_PASSWORD_API}/${hashPrefix.toUpperCase()}`, {
-      headers: { 'Add-Padding': 'true', 'User-Agent': USER_AGENT },
-    });
-    if (!response.ok) throw new Error(`HIBP status ${response.status}`);
-
-    const text = await response.text();
-    const suffixes = text
-      .split('\r\n')
-      .filter(Boolean)
-      .map(line => {
-        const [suffix, count] = line.split(':');
-        return { suffix, count: parseInt(count, 10) };
-      });
-
+    const suffixes = await hibpCheckPasswordPrefix(hashPrefix);
     res.json({ suffixes });
   } catch (err) {
     console.error('HIBP /check-password error:', err.message);
@@ -211,52 +218,69 @@ hibpRouter.post('/check-all', authenticateToken, async (req, res) => {
   }
 });
 
+// Shared by GET /check-email and the MCP check_email_breach tool.
+// Always scoped to the given userId's own account email — no arbitrary
+// third-party email parameter. Throws Error with a .code for the caller to
+// map to an appropriate status/message ('NOT_CONFIGURED' | 'USER_NOT_FOUND' |
+// 'HIBP_UNAVAILABLE' | unset for a generic upstream failure).
+export async function checkUserEmailBreaches(userId) {
+  const HIBP_API_KEY = process.env.HIBP_API_KEY;
+  if (!HIBP_API_KEY) {
+    const err = new Error('HIBP email check not configured (missing HIBP_API_KEY)');
+    err.code = 'NOT_CONFIGURED';
+    throw err;
+  }
+
+  const user = await User.findById(userId).select('email').lean();
+  if (!user?.email) {
+    const err = new Error('User not found');
+    err.code = 'USER_NOT_FOUND';
+    throw err;
+  }
+
+  const response = await fetch(
+    `${HIBP_BREACH_API}/${encodeURIComponent(user.email)}?truncateResponse=false`,
+    {
+      headers: {
+        'hibp-api-key': HIBP_API_KEY,
+        'User-Agent': USER_AGENT,
+      },
+    }
+  );
+
+  if (response.status === 404) return [];
+
+  if (response.status === 401) {
+    console.error('HIBP API key rejected');
+    const err = new Error('HIBP service unavailable — invalid API key');
+    err.code = 'HIBP_UNAVAILABLE';
+    throw err;
+  }
+
+  if (!response.ok) throw new Error(`HIBP status ${response.status}`);
+
+  const raw = await response.json();
+  return raw.map(b => ({
+    Name: b.Name,
+    Title: b.Title,
+    BreachDate: b.BreachDate,
+    PwnCount: b.PwnCount,
+    DataClasses: b.DataClasses,
+  }));
+}
+
 // GET /api/hibp/check-email
 // Checks the authenticated user's email against HIBP breached accounts.
 // Requires HIBP_API_KEY env variable.
 // Returns: { breaches: [{ Name, Title, BreachDate, PwnCount, DataClasses }] }
 hibpRouter.get('/check-email', authenticateToken, async (req, res) => {
-  const HIBP_API_KEY = process.env.HIBP_API_KEY;
-  if (!HIBP_API_KEY) {
-    return res.status(503).json({ error: 'HIBP email check not configured (missing HIBP_API_KEY)' });
-  }
-
   try {
-    const user = await User.findById(req.user._id).select('email').lean();
-    if (!user?.email) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const response = await fetch(
-      `${HIBP_BREACH_API}/${encodeURIComponent(user.email)}?truncateResponse=false`,
-      {
-        headers: {
-          'hibp-api-key': HIBP_API_KEY,
-          'User-Agent': USER_AGENT,
-        },
-      }
-    );
-
-    if (response.status === 404) return res.json({ breaches: [] });
-
-    if (response.status === 401) {
-      console.error('HIBP API key rejected');
-      return res.status(503).json({ error: 'HIBP service unavailable — invalid API key' });
-    }
-
-    if (!response.ok) throw new Error(`HIBP status ${response.status}`);
-
-    const raw = await response.json();
-    const breaches = raw.map(b => ({
-      Name: b.Name,
-      Title: b.Title,
-      BreachDate: b.BreachDate,
-      PwnCount: b.PwnCount,
-      DataClasses: b.DataClasses,
-    }));
-
+    const breaches = await checkUserEmailBreaches(req.user._id);
     res.json({ breaches });
   } catch (err) {
+    if (err.code === 'NOT_CONFIGURED') return res.status(503).json({ error: err.message });
+    if (err.code === 'USER_NOT_FOUND') return res.status(404).json({ error: err.message });
+    if (err.code === 'HIBP_UNAVAILABLE') return res.status(503).json({ error: err.message });
     console.error('HIBP /check-email error:', err.message);
     res.status(502).json({ error: 'Failed to reach HIBP breach API' });
   }

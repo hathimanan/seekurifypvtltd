@@ -200,6 +200,7 @@ LITELLM_MODEL=google/gemma-3-1b
 # Other
 GOOGLE_SAFE_BROWSING_API_KEY=<your-key>
 HF_API_TOKEN=<your-key>
+HIBP_API_KEY=<your-haveibeenpwned-api-key>  # required for /api/hibp/check-email and the MCP check_email_breach tool
 
 # CORS & Socket
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5000
@@ -237,6 +238,7 @@ GOOGLE_AI_API_KEY=<your-key>
 # Other
 GOOGLE_SAFE_BROWSING_API_KEY=<your-key>
 HF_API_TOKEN=<your-key>
+HIBP_API_KEY=<your-haveibeenpwned-api-key>  # required for /api/hibp/check-email and the MCP check_email_breach tool
 
 # CORS & Socket
 ALLOWED_ORIGINS=https://seekurify.vercel.app
@@ -343,6 +345,13 @@ Set all variables from `.env.production` in Vercel → Project Settings → Envi
 | GET | `/api/feature-flags/read` | Read current flag state (authenticated) |
 | POST | `/api/feature-flags/toggle` | Enable / disable a flag |
 | POST | `/api/feature-flags/assign-user-type` | Assign user tier |
+
+### MCP Server
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/mcp` | Model Context Protocol (Streamable HTTP, stateless) endpoint. Requires `Authorization: Bearer <token>`, same JWT as the rest of the API. |
+
+Exposes 4 read-only tools for MCP clients (e.g. Claude Desktop, Claude Code, `npx @modelcontextprotocol/inspector`): `check_password_breach`, `check_email_breach`, `list_vault_entries` (metadata only — never returns the password field), and `ask_security_assistant`. No write access and no decrypted-password access are exposed via MCP.
 
 ### Cron (Vercel-triggered)
 | Method | Endpoint | Description |

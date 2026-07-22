@@ -284,6 +284,7 @@ import riskScoreRouter       from './src/api/riskScore.js';
 import notificationsRouter   from './src/api/notifications.js';
 import { startScheduler }    from './src/services/scanScheduler.js';
 import quizRouter from './src/api/quizQuestions.js';
+import mcpRouter from './src/routes/mcpRoutes.ts';
 
 
 app.use('/api/homepage', homepageBeforeloginRoutes);
@@ -302,6 +303,7 @@ app.use('/api/hibp', hibpRouter);
 app.use('/api/risk-score', riskScoreRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api', quizRouter);
+app.use('/api/mcp', mcpRouter);
 
 // --- Serve static files from Vite build ---
 app.use(express.static(path.join(__dirname, 'dist')));

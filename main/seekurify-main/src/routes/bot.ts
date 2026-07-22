@@ -590,22 +590,26 @@ botRouter.post("/ask/stream", async (req: Request, res: Response) => {
   }
 });
 
-// ── Route ────────────────────────────────────────────────────────────────────
+// ── Shared "ask" logic ────────────────────────────────────────────────────
+// Used by both POST /ask (REST, web app + extension) and the MCP
+// ask_security_assistant tool. securityContext is intentionally still
+// accepted here (so REST callers keep their existing behavior) — the MCP
+// tool simply never populates it; see src/routes/mcpRoutes.ts.
+export async function answerSecurityQuestion(params: {
+  userQuestion: string;
+  userLevel?: string;
+  format?: string;
+  securityContext?: string;
+}): Promise<{ answer: string; widgetType: string; widgetData: object; suggestions: string[] }> {
+  const { userQuestion, userLevel, format, securityContext } = params;
 
-botRouter.post("/ask", async (req: Request, res: Response) => {
-  const { userQuestion, userLevel, format, securityContext } = req.body;
+  if (!userQuestion || !userQuestion.trim()) {
+    throw new Error("Question required.");
+  }
 
-  try {
-    console.log("📨 Bot request received:", { userQuestion: userQuestion?.substring(0, 50), userLevel, format, hasContext: !!securityContext });
-    console.log(`🔧 Selected AI provider: ${aiProvider}`);
+  const reference = getCybersecurityContent(userQuestion);
 
-    if (!userQuestion || !userQuestion.trim()) {
-      return res.status(400).json({ error: "Question required." });
-    }
-
-    const reference = getCybersecurityContent(userQuestion);
-
-    const FORMAT_RULES = `
+  const FORMAT_RULES = `
 ==================== FORMATTING RULES ====================
 You MUST format the "answer" based on the 'format' parameter:
 
@@ -634,11 +638,11 @@ You MUST format the "answer" based on the 'format' parameter:
 ==========================================================
 `;
 
-    const contextBlock = securityContext
-      ? `\n${sanitizeContext(securityContext)}\n`
-      : "";
+  const contextBlock = securityContext
+    ? `\n${sanitizeContext(securityContext)}\n`
+    : "";
 
-    const dynamicPrompt = `
+  const dynamicPrompt = `
 ${FORMAT_RULES}
 ${contextBlock}
 YOUR TASK:
@@ -660,38 +664,56 @@ User Question: ${userQuestion}
 FOLLOW THE FORMAT RULES EXACTLY. Return ONLY the JSON object.
 `;
 
-    // ── 1) Primary call ──────────────────────────────────────────────────────
-    let raw = "";
-    let parsed: any = null;
-    let usedFallback = false;
-    
-    try {
-      raw = await callAI(dynamicPrompt);
-      parsed = safeJsonParse(raw);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      
-      // If in fallback mode, use mock responses
-      if (errorMsg === "FALLBACK_MODE") {
-        console.log("🎭 Using fallback mock responses...");
-        parsed = getMockResponse(userQuestion);
-        usedFallback = true;
-      } else {
-        throw error;
-      }
+  // ── 1) Primary call ──────────────────────────────────────────────────────
+  let raw = "";
+  let parsed: any = null;
+  let usedFallback = false;
+
+  try {
+    raw = await callAI(dynamicPrompt);
+    parsed = safeJsonParse(raw);
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+
+    // If in fallback mode, use mock responses
+    if (errorMsg === "FALLBACK_MODE") {
+      console.log("🎭 Using fallback mock responses...");
+      parsed = getMockResponse(userQuestion);
+      usedFallback = true;
+    } else {
+      throw error;
+    }
+  }
+
+  if (!parsed || typeof parsed.answer !== "string") {
+    parsed = makeFallback(raw);
+  }
+
+  // Filter output before sending
+  if (!usedFallback && filterBotOutput(parsed.answer) === null) {
+    parsed = makeFallback("I cannot provide that response.");
+  }
+
+  if (usedFallback) console.log("⚠️ Response from fallback mock (API quota exceeded)");
+  return parsed;
+}
+
+// ── Route ────────────────────────────────────────────────────────────────────
+
+botRouter.post("/ask", async (req: Request, res: Response) => {
+  const { userQuestion, userLevel, format, securityContext } = req.body;
+
+  try {
+    console.log("📨 Bot request received:", { userQuestion: userQuestion?.substring(0, 50), userLevel, format, hasContext: !!securityContext });
+    console.log(`🔧 Selected AI provider: ${aiProvider}`);
+
+    if (!userQuestion || !userQuestion.trim()) {
+      return res.status(400).json({ error: "Question required." });
     }
 
-    if (!parsed || typeof parsed.answer !== "string") {
-      parsed = makeFallback(raw);
-    }
-
-    // Filter output before sending
-    if (!usedFallback && filterBotOutput(parsed.answer) === null) {
-      parsed = makeFallback("I cannot provide that response.");
-    }
+    const parsed = await answerSecurityQuestion({ userQuestion, userLevel, format, securityContext });
 
     console.log("✅ Bot response:", { answer: parsed.answer?.substring(0, 50), widgetType: parsed.widgetType });
-    if (usedFallback) console.log("⚠️ Response from fallback mock (API quota exceeded)");
     res.json(parsed);
 
   } catch (err) {
